@@ -1,1 +1,41 @@
+name: ECG-AI CI Pipeline
 
+# This tells GitHub to run the pipeline every time you "push" code to the main branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    # We use a virtual Ubuntu Linux machine to run our tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download your code onto the virtual machine
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python so we can run your AI Notebook
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # Step 3: Install the libraries your AI needs
+      - name: Install AI Dependencies
+        run: |
+          pip install numpy tensorflow matplotlib nbconvert jupyter
+
+      # Step 4: Run the Notebook to generate fresh "model_weights.h"
+      # This ensures your C code always has the latest AI math
+      - name: Export AI Weights
+        run: |
+          jupyter nbconvert --to script notebooks/Bare_Model_AI.ipynb
+          python notebooks/Bare_Model_AI.py
+
+      # Step 5: Compile your C code to make sure there are no syntax errors
+      - name: Verify C Compilation
+        run: |
+          gcc -Wall src/ecg_ai.c src/Final_ECG_v001.c -Isrc -lm -o ecg_firmware_check
