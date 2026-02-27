@@ -36,6 +36,9 @@ jobs:
           python notebooks/Bare_Model_AI.py
 
       # Step 5: Compile your C code to make sure there are no syntax errors
-      - name: Verify C Compilation
+      - name: Run Logic Test
         run: |
-          gcc -Wall src/ecg_ai.c src/Final_ECG_v001.c -Isrc -lm -o ecg_firmware_check
+          # Compile the engine AND the test runner together
+          gcc src/ecg_ai.c tests/test_runner.c -Isrc -lm -o logic_test
+          # Actually run the program
+          ./logic_test
