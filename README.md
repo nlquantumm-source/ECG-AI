@@ -6,7 +6,7 @@
 * This model is based on the research paper: TinyML-Based Classification in an ECG Monitoring Embeded System by Eunchan Kim, Jaehyuk Kim, Juyoung Park, Haneul Ko, and Yeunwoong Kyung.<br /><br />
 
 
-https://github.com/user-attachments/assets/43510f42-dddb-492e-a35b-f65ca24707a5
+https://github.com/user-attachments/assets/69abb622-f6ed-4cf1-8dc0-5676a487aecf
 
   
 ## Software Use-case
