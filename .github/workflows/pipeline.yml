@@ -1,3 +1,7 @@
+# ==========================================
+      # --- CI PIPELINE (Continuous Integration) ---
+      # ==========================================
+
 name: ECG-AI CI Pipeline
 
 # This tells GitHub to run the pipeline every time you "push" code to the main branch
@@ -42,3 +46,41 @@ jobs:
           gcc src/ecg_ai.c tests/test_runner.c -Isrc -lm -o logic_test
           # Actually run the program
           ./logic_test
+
+# ==========================================
+      # --- CD PIPELINE (Continuous Delivery) ---
+      # ==========================================
+
+      # Step 7: Security Acceptance (Static Analysis)
+      - name: Install Security Tools
+        run: sudo apt-get install cppcheck
+
+      - name: Security Scan (C Code)
+        run: |
+          # Scans your C files for bugs, memory leaks, and style issues
+          cppcheck src/ --error-exitcode=1
+
+      # Step 9: Performance & Memory Check
+      - name: Check Memory Footprint
+        run: |
+          echo "Measuring firmware size..."
+          # The 'size' command checks how much RAM/Flash your code uses
+          size ecg_firmware_check
+          
+      # Step 10 & 11: Production Deployment (Release Packaging)
+      # We gather the tested files into a clean folder for flashing
+      - name: Create Production Package
+        run: |
+          mkdir ecg_production_release
+          cp src/model_weights.h ecg_production_release/
+          cp src/Final_ECG_v001.c ecg_production_release/
+          cp src/ecg_ai.c ecg_production_release/
+          cp src/ecg_ai.h ecg_production_release/
+          # Create a zip file of the release
+          zip -r ecg_firmware_production.zip ecg_production_release/
+
+      - name: Upload Production Environment Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecg-production-firmware
+          path: ecg_firmware_production.zip
